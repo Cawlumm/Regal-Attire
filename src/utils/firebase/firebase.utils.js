@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth,
 signInWithRedirect,
 signInWithPopup,
-GoogleAuthProvider
+GoogleAuthProvider,
+createUserWithEmailAndPassword
 } from 'firebase/auth';
 import {
     getFirestore,
@@ -30,18 +31,21 @@ provider.setCustomParameters({
     prompt: "select_account"
 });
 
-// Export Auth and GooglePopup methods to be used by SignIn Component
+// Export Auth and sign in provider methods to be used by SignIn Component
 export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider);
 
 // Create Database
 export const db = getFirestore();
 
-export const createUserDocumentFromAtuh = async (userAuth) => {
+export const createUserDocumentFromAtuh = async (userAuth, additionalInformation = {displayName: ''}) => {
+    // Protect Code: return if there is no auth
+    if(!userAuth) return;
     // Takes databse, collection, and identifier as arguments
     const userDocRef = doc(db, "users", userAuth.uid);
     console.log(userDocRef);
-    // Set User Data
+    // User Data
     const userSnapshot = await getDoc(userDocRef);
     console.log(userSnapshot);
 
@@ -52,10 +56,12 @@ export const createUserDocumentFromAtuh = async (userAuth) => {
         const createdAt = new Date();
 
         try {
+            // Store User
             await setDoc(userDocRef, {
                 displayName,
                 email,
-                createdAt
+                createdAt,
+                ...additionalInformation
             });
         } catch(error) {
             console.log("Error Creating User Document", error.message);
@@ -64,4 +70,12 @@ export const createUserDocumentFromAtuh = async (userAuth) => {
 
     // Return userDocRef
     return userDocRef;
+}
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+    // Protect Code: return if there is no email or password
+    if(!email || !password) return;
+    // Takes authentication, email, and password as arguments
+    // Create authenticated user
+    return await createUserWithEmailAndPassword(auth, email, password);
 }
