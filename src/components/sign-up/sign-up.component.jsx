@@ -1,13 +1,12 @@
-import { useState } from "react";
-
+import { useState, useContext } from "react";
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAtuh,
 } from "../../utils/firebase/firebase.utils";
 import FormInput from "../form-input/form-input.component";
-import { Form } from "react-router-dom";
-import Button from '../button/button.component'
-import './sign-up.styles.scss'
+import Button from "../button/button.component";
+import { UserContext } from "../../contex/user.context";
+import "./sign-up.styles.scss";
 
 // Object to keep track of multiple fields
 const defaultFormFields = {
@@ -17,12 +16,12 @@ const defaultFormFields = {
   confirmPassword: "",
 };
 
-// Sign up form within Sign In page
+// Sign Up Form within Authentication component
 const SignUp = () => {
   // Use state hook to set the value of form fields
-  // Pull varaible from object to be used instead of 'formFields.displayName'
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
+
 
   // Reset Fields Function
   const resetFormFields = () => {
@@ -30,9 +29,7 @@ const SignUp = () => {
   };
 
   // Handle form submit
-  // Override submit event to create and add user to google firebase
   const handleSubmit = async (event) => {
-    // Call firebase auth function to create a new user
     event.preventDefault();
     if (password === confirmPassword) {
       try {
@@ -40,12 +37,14 @@ const SignUp = () => {
           email,
           password
         );
+
         const userDocRef = await createUserDocumentFromAtuh(user, {
           displayName,
         });
+
+
         resetFormFields();
       } catch (error) {
-        // Handle the case where the email is already in use
         if (error.code === "auth/email-already-in-use") {
           alert("User with the provided email already exits.");
         } else {
@@ -58,10 +57,7 @@ const SignUp = () => {
   };
 
   const handleChange = (event) => {
-    // Pull varaible from object to be used instead of 'formFields.displayName'
     const { name, value } = event.target;
-
-    // Setter function to change useState
     setFormFields({ ...formFields, [name]: value });
   };
 
@@ -69,12 +65,7 @@ const SignUp = () => {
     <div className="sign-up-container">
       <h2>Don't have an account?</h2>
       <span>Sign up with your email and password</span>
-      <form
-        onSubmit={(event) => {
-          // Call createAuthUserWithEmailAndPassword function
-          handleSubmit(event);
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <FormInput
           label="Display Name"
           inputOptions={{
@@ -119,8 +110,7 @@ const SignUp = () => {
           }}
         />
 
-        <Button type="submit" title='Sign Up' buttonType=''/>
-
+        <Button type="submit" title="Sign Up" buttonType="" />
       </form>
     </div>
   );
