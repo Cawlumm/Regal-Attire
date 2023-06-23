@@ -5,13 +5,19 @@ signInWithPopup,
 GoogleAuthProvider,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword,
-signOut, onAuthStateChanged
+signOut, 
+onAuthStateChanged,
+
 } from 'firebase/auth';
 import {
     getFirestore,
     doc,
     getDoc,
-    setDoc
+    setDoc,
+    collection,
+    writeBatch,
+    query,
+    getDocs
 } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -40,6 +46,45 @@ export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider)
 
 // Create Database
 export const db = getFirestore();
+
+export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
+    const collectionRef = collection(db, collectionKey);
+    const batch = writeBatch(db);
+
+    objectsToAdd.forEach((object) => {
+        const docRef = doc(collectionRef, object.title.toLowerCase());
+        batch.set(docRef, object);
+    });
+
+    await batch.commit();
+};
+
+export const getCategoriesAndDocuments = async () => {
+    // Create a reference to the 'categories' collection in Firestore
+    const collectionRef = collection(db, 'categories');
+    
+    // Create a query to retrieve all documents from the 'categories' collection
+    const q = query(collectionRef);
+
+    // Retrieve the documents based on the query and wait for the operation to complete
+    const querySnapshot = await getDocs(q);
+    
+    // Create an empty object to store the category mapping
+    const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+        // Extract the 'title' and 'items' properties from the document data
+        const { title, items } = docSnapshot.data();
+        
+        // Add an entry to the mapping where the key is the lowercase value of the 'title' and the value is the 'items' array
+        acc[title.toLowerCase()] = items;
+        
+        // Return the updated accumulator for the next iteration
+        return acc;
+    }, {});
+
+    // Return the category mapping as the result of the function
+    return categoryMap;
+}
+
 
 export const createUserDocumentFromAtuh = async (userAuth, additionalInformation = {displayName: ''}) => {
     // Protect Code: return if there is no auth
