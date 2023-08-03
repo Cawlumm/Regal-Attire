@@ -12,7 +12,7 @@ const ProductCard = ({product}) => {
             <img src={imageUrl} alt={name}/>
             <ProductCardFooter>
                 <span className='name'>{name}</span>
-                <span className='price'>{price}</span>
+                <span className='price'>${price}</span>
             </ProductCardFooter>
             <Button buttonType={BUTTON_TYPE_CLASSES.inverted} title='Add to cart' onClick={addProductToCart}/>
         </ProductCardContainer>
