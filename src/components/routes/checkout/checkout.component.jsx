@@ -2,9 +2,29 @@ import { useContext } from "react";
 import { CartContext } from "../../../contex/cart.context";
 import CheckoutCard from "../../checkout-card/checkout-card.component";
 import "./checkout.styles.scss";
-
+import Button from "../../button/button.component";
+import { BUTTON_TYPE_CLASSES } from "../../button/button.component";
 const Checkout = () => {
   const { cartItems, total, cartCount } = useContext(CartContext);
+  const checkout_handler = () => {
+    fetch('http://localhost:3001/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          items: [
+            ...cartItems
+          ]
+        })
+    }).then(res => {
+      if(res.ok) return res.json()
+      return res.json().then(json => Promise.reject(json))
+    }).then(({url}) => {
+      window.location = url
+    }).catch(err =>
+      console.log(err))
+  }
   return (
     <div className="checkout-container">
       <div className="checkout-header">
@@ -29,6 +49,7 @@ const Checkout = () => {
       ))}
         <span className="total">Items: {cartCount}</span>
         <span className="total">Total: ${total}</span>
+        <Button buttonType={BUTTON_TYPE_CLASSES.inverted} title="Checkout" onClick={checkout_handler}></Button>
     </div>
   );
 };

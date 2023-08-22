@@ -1,0 +1,12 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "stripe.js",
+  "scripts": {
+    "devStart": "nodemon stripe.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
