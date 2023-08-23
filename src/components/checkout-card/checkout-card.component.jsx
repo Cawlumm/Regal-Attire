@@ -1,7 +1,6 @@
 import "./checkout-card.styles.scss";
 import { CartContext } from "../../contex/cart.context";
 import { useContext } from "react";
-import Button from "../button/button.component";
 const CheckoutCard = ({ item }) => {
   const { imageUrl, id, name, price, quantity } = item;
   const { addItemToCart, removeItemFromCart, clearItemFromCart, cartCount } =

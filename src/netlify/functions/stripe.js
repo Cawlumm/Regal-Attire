@@ -43,6 +43,6 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 })
 // Start the Express app to listen on port 3000
-app.listen(3001, () => {
-  console.log('Server is listening on port 3001')
+app.listen(() => {
+  console.log('Server is listening')
 })
