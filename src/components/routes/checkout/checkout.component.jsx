@@ -7,7 +7,7 @@ import { BUTTON_TYPE_CLASSES } from "../../button/button.component";
 const Checkout = () => {
   const { cartItems, total, cartCount } = useContext(CartContext);
   const checkout_handler = () => {
-    fetch('http://localhost:3001/create-checkout-session', {
+    fetch('https://crest-clothing.netlify.app/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
