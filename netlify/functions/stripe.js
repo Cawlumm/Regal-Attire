@@ -1,5 +1,5 @@
-const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
-console.log(process.env.STRIPE_PRIVATE_KEY)
+const stripe = require('stripe')(sk_test_51NhgwWFObZ85V6LzRLrMegQ5ggZkvf4n0C8umth3DGCbVGMQAyoLrE4fKAP7Gzz0BGp89nONq52I2a3Ox989E65400fW6qWHPb);
+
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
