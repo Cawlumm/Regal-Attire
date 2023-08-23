@@ -27,10 +27,10 @@ exports.handler = async (event) => {
                     quantity: item.quantity,
                 };
             }),
-            success_url: `${process.env.SERVER_URL}`,
-            cancel_url: `${process.env.SERVER_URL}`,
+            success_url: 'https://crest-clothing.netlify.app',
+            cancel_url: 'https://crest-clothing.netlify.app',
         });
-
+        console.log(session.url)
         return {
             statusCode: 200,
             body: JSON.stringify({ url: session.url }),
