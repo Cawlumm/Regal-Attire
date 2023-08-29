@@ -5,26 +5,36 @@ import "./checkout.styles.scss";
 import Button from "../../button/button.component";
 import { BUTTON_TYPE_CLASSES } from "../../button/button.component";
 const Checkout = () => {
-  const { cartItems, total, cartCount } = useContext(CartContext);
-  const checkout_handler = () => {
-    fetch('https://crest-clothing.netlify.app/.netlify/functions/stripe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          items: [
-            ...cartItems
-          ]
-        })
-    }).then(res => {
-      if(res.ok) return res.json()
-      return res.json().then(json => Promise.reject(json))
-    }).then(({url}) => {
-      window.location = url
-    }).catch(err =>
-      console.log(err))
-  }
+// Import the necessary functions from the React Context
+const { cartItems, total, cartCount } = useContext(CartContext);
+
+// Define a handler function for initiating the checkout process
+const checkout_handler = () => {
+  // Send a POST request to the serverless function URL
+  fetch('https://crest-clothing.netlify.app/.netlify/functions/stripe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json', // Set the request content type
+    },
+    body: JSON.stringify({
+      items: [...cartItems], // Pass the cart items as JSON data in the request body
+    }),
+  })
+    .then(res => {
+      // Check if the response is OK
+      if (res.ok) return res.json();
+      // If not OK, reject the response and handle the error
+      return res.json().then(json => Promise.reject(json));
+    })
+    .then(({ url }) => {
+      // If the response is successful, redirect the user to the checkout URL
+      window.location = url;
+    })
+    .catch(err => {
+      // Handle any errors that occur during the process
+      console.log(err);
+    });
+};
   return (
     <div className="checkout-container">
       <div className="checkout-header">

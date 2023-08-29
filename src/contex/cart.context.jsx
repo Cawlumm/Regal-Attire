@@ -1,4 +1,6 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback, useContext } from "react";
+import {  updateUserCart } from "../utils/firebase/firebase.utils";
+import { UserContext } from "./user.context";
 
 // Function to update the quantity of a product in the cart
 const addCartItem = (cartItems, productToAdd) => {
@@ -38,6 +40,7 @@ export const CartContext = createContext({
   isVisible: false, // Default value for visibility
   setIsVisible: () => {}, // Default empty function for updating visibility
   cartItems: [], // Default empty array for cart items
+  setCartItems: () => {},
   addItemToCart: () => {}, // Default empty function for adding item to cart
   removeItemFromCart: () => {}, // Default empty function for removing item from cart
   clearItemFromCart: () => {},
@@ -52,6 +55,8 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]); // State for cart items
   const [cartCount, setCartCount] = useState(0); // State for cart count
   const [total, setTotal] = useState(0);
+
+  const {currentUser} = useContext(UserContext)
 
   useEffect(() => {
     const newCartCount = cartItems.reduce(
@@ -69,12 +74,26 @@ export const CartProvider = ({ children }) => {
     setTotal(newTotal);
   }, [cartItems]);
 
+  useEffect(() => {
+    // Define an asynchronous function to update the user's cart
+    const updateUserCartAsync = async () => {
+      // Check if a user is logged in
+      if (currentUser) {
+        // Update the user's cart using the updateUserCart function
+        await updateUserCart(currentUser.uid, cartItems);
+      }
+    };
+  
+    // Call the update function when cartItems change
+    updateUserCartAsync();
+  }, [cartItems]); // Listen for changes to cartItems
+
   // Function to add an item to the cart
   const addItemToCart = (productToAdd) => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
 
-  const removeItemFromCart = (productToRemove) => {
+  const removeItemFromCart = async (productToRemove) => {
     setCartItems(removeCartItem(cartItems, productToRemove));
   };
 
@@ -87,6 +106,7 @@ export const CartProvider = ({ children }) => {
     isVisible, // Current visibility state
     setIsVisible, // Function to update visibility
     cartItems, // Current cart items
+    setCartItems,
     addItemToCart,
     removeItemFromCart, // Function to add item to cart
     clearItemFromCart,

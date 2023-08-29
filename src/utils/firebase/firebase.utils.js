@@ -17,7 +17,8 @@ import {
     collection,
     writeBatch,
     query,
-    getDocs
+    getDocs,
+    updateDoc
 } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -58,7 +59,12 @@ export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
 
     await batch.commit();
 };
-
+/**
+ * Queries the Firestore db for the categories document
+ * Retrieves the categories and maps them into an array of objects 
+ * to be used in the categories context
+ * @returns a category map for the category context
+ */
 export const getCategoriesAndDocuments = async () => {
     // Create a reference to the 'categories' collection in Firestore
     const collectionRef = collection(db, 'categories');
@@ -85,39 +91,111 @@ export const getCategoriesAndDocuments = async () => {
     return categoryMap;
 }
 
+/**Test Function */
+export const getUserDocument = async (uid) => {
+    // Takes database, collection, and identifier as arguments
+    const userDocRef = doc(db, "users", uid);
 
-export const createUserDocumentFromAtuh = async (userAuth, additionalInformation = {displayName: ''}) => {
-    // Protect Code: return if there is no auth
-    if(!userAuth) return;
-    // Takes databse, collection, and identifier as arguments
-    const userDocRef = doc(db, "users", userAuth.uid);
-    console.log(userDocRef);
-    // User Data
-    const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot);
-
-    // If user data exists
-    // Create / Set the document with the data from userAuth in my collection
-    if(!userSnapshot.exists()) {
-        const {displayName, email} = userAuth;
-        const createdAt = new Date();
-
-        try {
-            // Store User
-            await setDoc(userDocRef, {
-                displayName,
-                email,
-                createdAt,
-                ...additionalInformation
-            });
-        } catch(error) {
-            console.log("Error Creating User Document", error.message);
+    try {
+        const userSnapshot = await getDoc(userDocRef);
+        
+        if (userSnapshot.exists()) {
+            return userSnapshot;
+        } else {
+            console.log("User document does not exist.");
+            return null;
         }
+    } catch (error) {
+        console.log("Error getting user document:", error.message);
+        return null;
     }
+};
 
-    // Return userDocRef
-    return userDocRef;
+/**
+ * Update the user's cart in the Firebase Firestore database.
+ * @param {string} uid - The UID of the user.
+ * @param {Array} cartItems - The array of cart items to be updated supplied from 
+ *                            the cart items context.
+ */
+export const updateUserCart = async (uid, cartItems) => {
+    // Reference to the user document in the Firestore database
+    const userDocRef = doc(db, "users", uid);
+  
+    try {
+      // Fetch the user's existing cart data from the Firestore document
+      const userSnapshot = await getDoc(userDocRef);
+      const userData = userSnapshot.data();
+  
+      // Update the user's cart with the new cartItems to Firestore
+      await updateDoc(userDocRef, { cart: cartItems });
+  
+      console.log("Cart updated successfully.");
+    } catch (error) {
+      console.error("Error updating cart:", error.message);
+    }
+  };
+
+/**
+ * Load the user's cart from firestore to create data persitance
+ * The function loads once on mount of the navigation component
+ * @param {string} uid - The UID of the user
+ * @returns a cart map for the shopping car from firestore
+ */
+export const loadUserCart = async (uid) => {
+    // Reference to the user document in the Firestore database
+    const userDocRef = doc(db, "users", uid);
+    try {
+        const userSnapshot = await getDoc(userDocRef);
+        const userCart = userSnapshot.data().cart;
+        console.log('Cart loaded successfully')
+        return userCart
+    } catch (error) {
+        console.error('Error loading user cart:', error.message);
+    }
 }
+
+/**
+ * Create a user document in the Firestore database using authentication data.
+ * @param {object} userAuth - The authentication data of the user.
+ * @param {object} additionalInformation - Additional information for the user document.
+ * @returns {DocumentReference} - A reference to the created user document.
+ */
+export const createUserDocumentFromAtuh = async (userAuth, additionalInformation = {displayName: ''}) => {
+    // Check if there is user authentication data
+    if (!userAuth) return;
+  
+    // Create a reference to the user document using the UID from userAuth
+    const userDocRef = doc(db, "users", userAuth.uid);
+  
+    // Fetch the user document snapshot
+    const userSnapshot = await getDoc(userDocRef);
+  
+    // If the user document doesn't exist, create it
+    if (!userSnapshot.exists()) {
+      const {displayName, email} = userAuth;
+      const createdAt = new Date();
+      const cart = []; // Initialize an empty cart array for the user
+  
+      try {
+        // Store user information in the user document
+        await setDoc(userDocRef, {
+          displayName,
+          email,
+          createdAt,
+          cart, // Assign the cart array
+          ...additionalInformation
+        });
+  
+        console.log("User document created successfully.");
+      } catch(error) {
+        console.error("Error creating user document:", error.message);
+      }
+    }
+  
+    // Return the reference to the user document
+    return userDocRef;
+  };
+  
 
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
     // Protect Code: return if there is no email or password
