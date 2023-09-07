@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Button from "../button/button.component";
 import { useNavigate } from "react-router-dom";
-import CottonFieldImage from './CottonField.jpg';
 import Shoes from './Shoes.jpg';
 import Hat from './Hat.jpg';
 import Jackets from './Jackets.jpg';
@@ -16,7 +15,7 @@ const WelcomeBanner = () => {
     const navigate = useNavigate();
     const onNavigateHandler = () => navigate('shop');
     const [intervalId, setIntervalId] = useState(null);
-    const slides = [CottonFieldImage, Shoes, Hat, Jackets, Jacket, Dress];
+    const slides = [Shoes, Hat, Jackets, Jacket, Dress];
     let slideIndex = 1;
  
     /**
@@ -51,7 +50,7 @@ const WelcomeBanner = () => {
 
             // Start Interval when component mounts, calls the changeBanner function every x seconds
             const startInterval = () => {
-                const newIntervalId = setInterval(() => {changeBanner(1)}, 30000);
+                const newIntervalId = setInterval(() => {changeBanner(1)}, 15000);
                 setIntervalId(newIntervalId); // Sets inverval in useState
               };
               
