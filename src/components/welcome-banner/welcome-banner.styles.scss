@@ -55,3 +55,19 @@
       }
     }
   }
+
+.welcome-content {
+animation: riseUp 1s ease-in-out forwards; /* Animation name, duration, timing function, and fill mode */
+opacity: 0; /* Start with opacity set to 0 */
+}
+
+@keyframes riseUp {
+from {
+    transform: translateY(30%); /* Start from the bottom */
+    opacity: 0;
+}
+to {
+    transform: translateY(0); /* Move to its original position */
+    opacity: 1; /* Fade in */
+}
+}
