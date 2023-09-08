@@ -17,6 +17,7 @@ const Newsletter = () => {
 
     // Hanlde varaible state with input change
     const handleInputChange = (e) => {
+        setResult('')
         const inputValue = e.target.value;
         setEmail(inputValue);
         setIsValid(validateEmail(inputValue));
