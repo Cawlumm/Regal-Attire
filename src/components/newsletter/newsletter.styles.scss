@@ -1,0 +1,100 @@
+.newsletter-container {
+    width: 100%;
+    padding: 40px 0px;
+    background-color: #f6f6f6;
+
+    .components-container {
+        width: 65%;
+        max-width: 600px;
+        min-width: 350px;
+        margin: auto;
+
+        .instructions-container {
+            margin-bottom: 30px;
+            margin: auto;
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+    
+            input[type="text"] {
+                width: 100%;
+                height: 60px;
+                padding: 10px;
+                border: 1px solid #ccc; 
+            }
+        
+            label {
+                position: absolute;
+                top: 50%;
+                left: 10px;
+                transform: translateY(-50%);
+                color: #999;
+                pointer-events: none; /* Prevents label from interfering with input */
+                transition: 0.2s ease-out;
+            }
+        
+            input[type="text"]:focus + label,
+            input[type="text"]:not(:placeholder-shown) + label {
+              transform: translateY(-240%) translateX(-20%) scale(0.8);
+              outline: none;
+            }
+    
+            input[type="text"]:focus {
+                outline: none;
+            }
+        
+            button {
+                position: absolute;
+                top: 15%;
+                right: 3%;
+                height: 45px;
+                width: 35%;
+                min-width: 150px;
+                padding: 10px 20px;
+                letter-spacing: .2em;
+                border: none;
+                color: whitesmoke;
+                background-color: black;
+                cursor: pointer;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+                &:active {
+                    transform: translateY(5%) scale(.95);
+                }
+              }
+            
+
+        }
+    }
+    
+    div {
+        text-align: center;    
+    }
+
+    hr {
+        margin-top: 10px;
+        padding-bottom: 10px;
+        border-width: 1px 0 0 0;
+        width: 100px;
+        unicode-bidi: isolate;
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+        margin-inline-start: auto;
+        margin-inline-end: auto;
+        overflow: hidden;
+        border-style: inset;
+        clear: both;
+        border-top: solid #1f2021;
+        border-width: 1px 0 0;
+        height: 0;
+    }
+
+    .error-message {
+        color: red;
+    }
+        
+}

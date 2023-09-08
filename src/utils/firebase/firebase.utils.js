@@ -154,6 +154,30 @@ export const loadUserCart = async (uid) => {
     }
 }
 
+export const getNewsletterEmails = async () => {
+  const emailDocRef = doc(db, "newsletter", 'emails');
+  try {
+    const emailSnapshot = await getDoc(emailDocRef);
+    const items = emailSnapshot.data().items;
+    console.log(items)
+  } catch(error) {
+    console.error(`Error getting newsletter emails`, error.message);
+  }
+}
+
+export const storeNewsLetterEmail = async (email) => {
+  const emailDocRef = doc(db, "newsletter", 'emails');
+  try {
+    const emailSnapshot = await getDoc(emailDocRef);
+    const createdAt = new Date();
+    await updateDoc(emailDocRef, {items:{email: email, date: createdAt}})
+  } catch(error) {
+    console.error(`Error saving newsletter emails`, error.message);
+  }
+}
+
+
+
 /**
  * Create a user document in the Firestore database using authentication data.
  * @param {object} userAuth - The authentication data of the user.
