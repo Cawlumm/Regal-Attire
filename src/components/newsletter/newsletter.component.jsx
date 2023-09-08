@@ -7,6 +7,7 @@ const Newsletter = () => {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [isValid, setIsValid] = useState(false);
+    const [result, setResult] = useState('');
 
     // Handle form submission and validation of email address using regex pattern matching
     const validateEmail = (input) => {
@@ -22,7 +23,7 @@ const Newsletter = () => {
       };
 
     // Handle submit
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default submit
 
         const inputField = document.getElementById('inputField');
@@ -34,12 +35,11 @@ const Newsletter = () => {
         }
 
         // Clear the input field
-        storeNewsLetterEmail(email)
+        const result = await storeNewsLetterEmail(email);
+        setResult(result);
         setEmail('');
         inputField.value = '';
 
-        // API Call here
-        storeNewsLetterEmail()
     }
     return (
         <div className="newsletter-container">
@@ -65,6 +65,7 @@ const Newsletter = () => {
             {submitted && !isValid && (
                 <span className="error-message">Not a Valid Email</span>
             )}
+            {result ? <span>{result}</span> : null}
             </div>
         </div>
     )

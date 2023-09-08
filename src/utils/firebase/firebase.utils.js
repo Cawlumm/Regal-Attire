@@ -169,6 +169,7 @@ export const getNewsletterEmails = async () => {
 /**
  * Function Designed to store given email to Firestore with validation
  * @param {string} email 
+ * @returns {string} result from Api call
  */
 export const storeNewsLetterEmail = async (email) => {
   const emailDocRef = doc(db, "newsletter", 'emails');
@@ -187,11 +188,15 @@ export const storeNewsLetterEmail = async (email) => {
         await updateDoc(emailDocRef, {
           items: arrayUnion({ email: email, date: createdAt })
         });
+
+        return `${email} added to newsletter!`
       } else {
         console.log(`Email '${email}' already exists in the storage.`);
+        return `The email ${email} is already subscribed.`
       }
     } else {
       console.error("Invalid data structure in Firestore.");
+      return null;
     }
   } catch (error) {
     console.error(`Error saving newsletter emails`, error.message);
