@@ -18,7 +18,8 @@ import {
     writeBatch,
     query,
     getDocs,
-    updateDoc
+    updateDoc,
+    arrayUnion
 } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -165,17 +166,37 @@ export const getNewsletterEmails = async () => {
   }
 }
 
+/**
+ * Function Designed to store given email to Firestore with validation
+ * @param {string} email 
+ */
 export const storeNewsLetterEmail = async (email) => {
   const emailDocRef = doc(db, "newsletter", 'emails');
   try {
-    const emailSnapshot = await getDoc(emailDocRef);
     const createdAt = new Date();
-    await updateDoc(emailDocRef, {items:{email: email, date: createdAt}})
-  } catch(error) {
+
+    // Check if the email already exists in the "items" array
+    const emailSnapshot = await getDoc(emailDocRef);
+    const emailData = emailSnapshot.data();
+
+    if (emailData && Array.isArray(emailData.items)) {
+      const emailExists = emailData.items.some(item => item.email === email);
+
+      if (!emailExists) {
+        // Use arrayUnion to add the new item to the "items" array without overwriting
+        await updateDoc(emailDocRef, {
+          items: arrayUnion({ email: email, date: createdAt })
+        });
+      } else {
+        console.log(`Email '${email}' already exists in the storage.`);
+      }
+    } else {
+      console.error("Invalid data structure in Firestore.");
+    }
+  } catch (error) {
     console.error(`Error saving newsletter emails`, error.message);
   }
-}
-
+};
 
 
 /**
